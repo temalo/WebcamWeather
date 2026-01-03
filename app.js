@@ -3,6 +3,15 @@ class WebcamWeather {
     constructor() {
         this.config = null;
         this.refreshTimer = null;
+        
+        // Weather condition thresholds
+        this.WEATHER_THRESHOLDS = {
+            WINDY_SPEED: 20,
+            HUMID_PERCENT: 80,
+            HOT_TEMP_C: 30,
+            FREEZING_TEMP_C: 0,
+            COLD_TEMP_C: 10
+        };
     }
 
     // Initialize the application
@@ -135,8 +144,8 @@ class WebcamWeather {
             const tempF = (tempC * 9/5) + 32;
             const humidity = obs.relative_humidity || obs[8];
             const pressure = obs.station_pressure || obs[6];
-            const windSpeed = obs.wind_avg || obs[2];
-            const windGust = obs.wind_gust || obs[3];
+            const windSpeed = obs.wind_avg || obs[2] || 0;
+            const windGust = obs.wind_gust || obs[3] || 0;
             
             // Calculate feels like temperature
             const feelsLikeC = this.calculateFeelsLike(tempC, humidity, windSpeed);
@@ -201,10 +210,14 @@ class WebcamWeather {
                 const date = new Date(day.day_start_local * 1000);
                 const dayName = date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
                 
-                const tempHighF = ((day.air_temp_high * 9/5) + 32).toFixed(1);
-                const tempLowF = ((day.air_temp_low * 9/5) + 32).toFixed(1);
-                const tempHighC = day.air_temp_high.toFixed(1);
-                const tempLowC = day.air_temp_low.toFixed(1);
+                // Validate temperature values exist
+                const tempHigh = day.air_temp_high ?? 0;
+                const tempLow = day.air_temp_low ?? 0;
+                
+                const tempHighF = ((tempHigh * 9/5) + 32).toFixed(1);
+                const tempLowF = ((tempLow * 9/5) + 32).toFixed(1);
+                const tempHighC = tempHigh.toFixed(1);
+                const tempLowC = tempLow.toFixed(1);
                 
                 forecastDiv.innerHTML = `
                     <h3>${dayName}</h3>
@@ -266,11 +279,11 @@ class WebcamWeather {
 
     // Get weather condition description
     getWeatherCondition(temp, humidity, windSpeed) {
-        if (windSpeed > 20) return 'Windy';
-        if (humidity > 80) return 'Humid';
-        if (temp > 30) return 'Hot';
-        if (temp < 0) return 'Freezing';
-        if (temp < 10) return 'Cold';
+        if (windSpeed > this.WEATHER_THRESHOLDS.WINDY_SPEED) return 'Windy';
+        if (humidity > this.WEATHER_THRESHOLDS.HUMID_PERCENT) return 'Humid';
+        if (temp > this.WEATHER_THRESHOLDS.HOT_TEMP_C) return 'Hot';
+        if (temp < this.WEATHER_THRESHOLDS.FREEZING_TEMP_C) return 'Freezing';
+        if (temp < this.WEATHER_THRESHOLDS.COLD_TEMP_C) return 'Cold';
         return 'Clear';
     }
 
