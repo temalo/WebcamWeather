@@ -12,16 +12,13 @@
     </header>
 
     <main class="container">
-        <!-- Webcam Section -->
-        <section class="webcam-section">
-            <h2>Live Webcam</h2>
-            <div id="webcam-container" class="webcam-container">
-                <div id="webcam-loading" class="loading">Loading webcam...</div>
-                <img id="webcam-image" class="webcam-image" alt="Webcam view" style="display: none;">
-                <div id="webcam-error" class="error" style="display: none;"></div>
-            </div>
-            <div class="webcam-info">
-                <p id="webcam-timestamp">Last updated: <span id="last-update">--</span></p>
+        <!-- Time Lapse Section -->
+        <section class="timelapse-section">
+            <h2>Last 12 Hours Time Lapse</h2>
+            <div id="timelapse-container" class="timelapse-container">
+                <!-- webcam.io widget -->
+                <script type="text/javascript">window.timelapseview_options=window.timelapseview_options || {};window.timelapseview_options["sshS9"] = {"e":"Melxgz","t":"1","x":"680","y":"620","r":"12-hours"};</script><script src="https://webcam.io/s/widget-v1_03.load.js?i=sshS9" async></script>
+                <!-- end webcam.io widget -->
             </div>
         </section>
 

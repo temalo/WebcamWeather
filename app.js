@@ -32,7 +32,7 @@ class WebcamWeather {
         try {
             const response = await fetch('config.json');
             if (!response.ok) {
-                throw new Error('Configuration file not found. Please copy config.example.json to config.json and configure it.');
+                throw new Error('Configuration file not found.');
             }
             this.config = await response.json();
         } catch (error) {
@@ -51,56 +51,9 @@ class WebcamWeather {
     // Update all data
     async updateAll() {
         await Promise.all([
-            this.updateWebcam(),
             this.updateWeather(),
             this.updateForecast()
         ]);
-    }
-
-    // Update webcam image
-    async updateWebcam() {
-        const container = document.getElementById('webcam-container');
-        const loading = document.getElementById('webcam-loading');
-        const image = document.getElementById('webcam-image');
-        const error = document.getElementById('webcam-error');
-        const timestamp = document.getElementById('last-update');
-
-        try {
-            loading.style.display = 'block';
-            error.style.display = 'none';
-
-            if (!this.config.webcam || !this.config.webcam.cameraId) {
-                throw new Error('Webcam configuration is missing');
-            }
-
-            // For webcam.io, we typically access images via their CDN
-            // The actual URL structure depends on the webcam.io API
-            // This is a generic implementation that can be customized
-            const webcamUrl = `${this.config.webcam.apiUrl}/cameras/${this.config.webcam.cameraId}/image/current`;
-            
-            // Alternative: Direct image URL if available
-            // const webcamUrl = `https://images.webcams.travel/webcam/${this.config.webcam.cameraId}.jpg`;
-            
-            image.onload = () => {
-                loading.style.display = 'none';
-                image.style.display = 'block';
-                const now = new Date();
-                timestamp.textContent = now.toLocaleString();
-            };
-
-            image.onerror = () => {
-                throw new Error('Failed to load webcam image');
-            };
-
-            // Add timestamp to prevent caching
-            image.src = `${webcamUrl}?t=${Date.now()}`;
-
-        } catch (err) {
-            console.error('Webcam error:', err);
-            loading.style.display = 'none';
-            error.textContent = 'Unable to load webcam image. ' + err.message;
-            error.style.display = 'block';
-        }
     }
 
     // Update weather data
@@ -143,7 +96,14 @@ class WebcamWeather {
             const tempC = obs.air_temperature || obs[7];
             const tempF = (tempC * 9/5) + 32;
             const humidity = obs.relative_humidity || obs[8];
-            const pressure = obs.station_pressure || obs[6];
+            const stationPressureMb = obs.station_pressure || obs[6];
+            
+            // Convert station pressure to sea level pressure
+            const elevationM = this.config.tempest.elevationMeters || 0;
+            const tempK = tempC + 273.15;
+            const seaLevelPressureMb = stationPressureMb * Math.pow(1 - (0.0065 * elevationM) / tempK, -5.257);
+            const pressureInHg = seaLevelPressureMb * 0.02953;
+            
             const windSpeed = obs.wind_avg || obs[2] || 0;
             const windGust = obs.wind_gust || obs[3] || 0;
             
@@ -155,7 +115,7 @@ class WebcamWeather {
             document.getElementById('feels-like').textContent = `${feelsLikeF.toFixed(1)}°F (${feelsLikeC.toFixed(1)}°C)`;
             document.getElementById('humidity').textContent = `${humidity}%`;
             document.getElementById('wind').textContent = `${windSpeed.toFixed(1)} mph (Gust: ${windGust.toFixed(1)} mph)`;
-            document.getElementById('pressure').textContent = `${pressure.toFixed(2)} mb`;
+            document.getElementById('pressure').textContent = `${pressureInHg.toFixed(2)} inHg`;
             document.getElementById('conditions').textContent = this.getWeatherCondition(tempC, humidity, windSpeed);
 
             loading.style.display = 'none';
