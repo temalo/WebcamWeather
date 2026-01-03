@@ -3,6 +3,7 @@ class WebcamWeather {
     constructor() {
         this.config = null;
         this.refreshTimer = null;
+        this.elevationMeters = null;
         
         // Weather condition thresholds
         this.WEATHER_THRESHOLDS = {
@@ -19,6 +20,7 @@ class WebcamWeather {
         try {
             await this.loadConfig();
             this.updateSiteTitle();
+            await this.fetchStationMetadata();
             await this.updateAll();
             this.startAutoRefresh();
         } catch (error) {
@@ -37,6 +39,33 @@ class WebcamWeather {
             this.config = await response.json();
         } catch (error) {
             throw new Error('Failed to load configuration: ' + error.message);
+        }
+    }
+
+    // Fetch station metadata including elevation
+    async fetchStationMetadata() {
+        try {
+            if (!this.config.tempest || !this.config.tempest.stationId || !this.config.tempest.token) {
+                throw new Error('Tempest configuration is missing');
+            }
+
+            const url = `${this.config.tempest.apiUrl}/stations/${this.config.tempest.stationId}?token=${this.config.tempest.token}`;
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.stations && result.stations.length > 0) {
+                this.elevationMeters = result.stations[0].station_meta?.elevation || 0;
+            } else {
+                this.elevationMeters = 0;
+            }
+        } catch (error) {
+            console.error('Failed to fetch station metadata:', error);
+            this.elevationMeters = 0;
         }
     }
 
@@ -99,7 +128,7 @@ class WebcamWeather {
             const stationPressureMb = obs.station_pressure || obs[6];
             
             // Convert station pressure to sea level pressure
-            const elevationM = this.config.tempest.elevationMeters || 0;
+            const elevationM = this.elevationMeters || 0;
             const tempK = tempC + 273.15;
             const seaLevelPressureMb = stationPressureMb * Math.pow(1 - (0.0065 * elevationM) / tempK, -5.257);
             const pressureInHg = seaLevelPressureMb * 0.02953;
