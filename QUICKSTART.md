@@ -17,14 +17,21 @@ Edit `config.json` with your credentials:
 
 Choose one of these methods:
 
+**Node.js (Recommended for Azure):**
+```bash
+npm install
+npm run build  # Requires env vars or creates config.json
+npm start
+```
+
+**Node.js (with http-server):**
+```bash
+npx http-server -p 8000
+```
+
 **Python:**
 ```bash
 python3 -m http.server 8000
-```
-
-**Node.js:**
-```bash
-npx http-server -p 8000
 ```
 
 **PHP:**
@@ -49,7 +56,12 @@ See the main [README.md](README.md) for:
 - Detailed configuration options
 - Troubleshooting guide
 - Customization tips
-- Deployment instructions
+- Local deployment instructions
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for:
+- Azure automatic deployment setup
+- GitHub Actions configuration
+- Production deployment guide
 
 ## File Overview
 
