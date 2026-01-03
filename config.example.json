@@ -1,0 +1,15 @@
+{
+  "webcam": {
+    "cameraId": "YOUR_WEBCAM_IO_CAMERA_ID",
+    "apiUrl": "https://api.webcam.io/v1"
+  },
+  "tempest": {
+    "stationId": "YOUR_TEMPEST_STATION_ID",
+    "token": "YOUR_TEMPEST_API_TOKEN",
+    "apiUrl": "https://swd.weatherflow.com/swd/rest"
+  },
+  "site": {
+    "title": "My Webcam Weather Station",
+    "refreshInterval": 300000
+  }
+}

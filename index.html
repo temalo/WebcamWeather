@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Webcam Weather Station</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1 id="site-title">My Webcam Weather Station</h1>
+    </header>
+
+    <main class="container">
+        <!-- Webcam Section -->
+        <section class="webcam-section">
+            <h2>Live Webcam</h2>
+            <div id="webcam-container" class="webcam-container">
+                <div id="webcam-loading" class="loading">Loading webcam...</div>
+                <img id="webcam-image" class="webcam-image" alt="Webcam view" style="display: none;">
+                <div id="webcam-error" class="error" style="display: none;"></div>
+            </div>
+            <div class="webcam-info">
+                <p id="webcam-timestamp">Last updated: <span id="last-update">--</span></p>
+            </div>
+        </section>
+
+        <!-- Weather Section -->
+        <section class="weather-section">
+            <h2>Current Weather Conditions</h2>
+            <div id="weather-current" class="weather-widget">
+                <div id="weather-loading" class="loading">Loading weather data...</div>
+                <div id="weather-data" class="weather-data" style="display: none;">
+                    <div class="weather-item">
+                        <span class="weather-label">Temperature:</span>
+                        <span id="temp" class="weather-value">--</span>
+                    </div>
+                    <div class="weather-item">
+                        <span class="weather-label">Feels Like:</span>
+                        <span id="feels-like" class="weather-value">--</span>
+                    </div>
+                    <div class="weather-item">
+                        <span class="weather-label">Humidity:</span>
+                        <span id="humidity" class="weather-value">--</span>
+                    </div>
+                    <div class="weather-item">
+                        <span class="weather-label">Wind:</span>
+                        <span id="wind" class="weather-value">--</span>
+                    </div>
+                    <div class="weather-item">
+                        <span class="weather-label">Pressure:</span>
+                        <span id="pressure" class="weather-value">--</span>
+                    </div>
+                    <div class="weather-item">
+                        <span class="weather-label">Conditions:</span>
+                        <span id="conditions" class="weather-value">--</span>
+                    </div>
+                </div>
+                <div id="weather-error" class="error" style="display: none;"></div>
+            </div>
+
+            <h2>Weather Forecast</h2>
+            <div id="weather-forecast" class="forecast-container">
+                <div id="forecast-loading" class="loading">Loading forecast...</div>
+                <div id="forecast-data" class="forecast-data" style="display: none;"></div>
+                <div id="forecast-error" class="error" style="display: none;"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Data updates automatically every 5 minutes</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
