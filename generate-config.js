@@ -48,7 +48,14 @@ const config = {
     },
     site: {
         title: process.env.SITE_TITLE || "My Webcam Weather Station",
-        refreshInterval: parseInt(process.env.SITE_REFRESH_INTERVAL || "300000", 10)
+        refreshInterval: (() => {
+            const interval = parseInt(process.env.SITE_REFRESH_INTERVAL || "300000", 10);
+            if (isNaN(interval) || interval < 0) {
+                console.error('ERROR: Invalid SITE_REFRESH_INTERVAL value. Must be a positive number.');
+                process.exit(1);
+            }
+            return interval;
+        })()
     }
 };
 

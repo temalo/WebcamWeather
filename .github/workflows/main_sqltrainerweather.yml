@@ -7,7 +7,7 @@ on:
   push:
     branches:
       - main
-      - copilot/setup-automatic-deployment-azure
+      - copilot/setup-automatic-deployment-azure  # Remove this line after testing
   workflow_dispatch:
 
 jobs:

@@ -30,7 +30,7 @@ fi
 echo "✓ config.json found"
 
 # Check if Node.js is installed
-if ! command -v node &> /dev/null; then
+if ! command -v node >/dev/null 2>&1; then
     echo "❌ Node.js is not installed"
     echo "Please install Node.js from https://nodejs.org/"
     exit 1
