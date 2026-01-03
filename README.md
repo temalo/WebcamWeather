@@ -88,7 +88,11 @@ npx http-server -p 8000
 php -S localhost:8000
 ```
 
-**Option 4: Deploy to a Web Host**
+**Option 4: Deploy to Azure App Service**
+
+This repository is configured for automatic deployment to Azure App Service. See the [Azure Deployment](#azure-deployment) section below for details.
+
+**Option 5: Deploy to Other Web Hosts**
 - Upload all files (including `config.json`) to your web hosting service
 - Make sure `config.json` is readable by the web server
 - Access via your domain or hosting URL
@@ -118,13 +122,20 @@ http://localhost:8000
 
 ```
 WebcamWeather/
+├── .github/
+│   └── workflows/
+│       └── main_sqltrainerweather.yml  # Azure deployment workflow
 ├── index.html              # Main HTML page
 ├── styles.css              # CSS styling
 ├── app.js                  # JavaScript application logic
+├── server.js               # Node.js server for Azure hosting
+├── generate-config.js      # Script to generate config.json from env vars
+├── web.config              # Azure App Service configuration
+├── package.json            # Node.js package configuration
 ├── config.example.json     # Example configuration (template)
-├── config.json            # Your actual configuration (not in git)
-├── .gitignore             # Git ignore file
-└── README.md              # This file
+├── config.json             # Your actual configuration (not in git)
+├── .gitignore              # Git ignore file
+└── README.md               # This file
 ```
 
 ## Customization
@@ -174,6 +185,104 @@ If you need to adapt it for different services, edit the API calls in `app.js`.
 - Do not commit `config.json` to version control (it's in `.gitignore`)
 - Consider using environment variables or server-side configuration for production deployments
 - If deploying publicly, consider implementing server-side proxies for API calls to hide credentials
+
+## Azure Deployment
+
+This repository is configured for automatic deployment to Azure App Service using GitHub Actions.
+
+### Prerequisites
+
+1. **Azure Account**: You need an Azure subscription
+2. **Azure App Service**: Create an Azure App Service (Web App) with Node.js runtime
+3. **GitHub Repository Secrets**: Configure the following secrets in your GitHub repository
+
+### Required GitHub Secrets
+
+Navigate to your repository's **Settings > Secrets and variables > Actions** and add these secrets:
+
+#### Azure Authentication (automatically configured by Azure)
+- `AZUREAPPSERVICE_CLIENTID_BBFA7C4F1D884BDC935C74195912EC15`
+- `AZUREAPPSERVICE_TENANTID_1387DECCA08345F09D0E209F6AF4B37D`
+- `AZUREAPPSERVICE_SUBSCRIPTIONID_94A1B5DA1CFC4F81A6873F5F6A4A0693`
+
+#### Application Configuration (you must add these)
+- `WEBCAM_CAMERA_ID` - Your webcam.io camera ID
+- `TEMPEST_STATION_ID` - Your Tempest weather station ID
+- `TEMPEST_API_TOKEN` - Your Tempest API token
+
+#### Optional Configuration
+- `SITE_TITLE` - Custom site title (default: "My Webcam Weather Station")
+- `SITE_REFRESH_INTERVAL` - Refresh interval in milliseconds (default: 300000)
+- `WEBCAM_API_URL` - Custom webcam API URL (default: https://api.webcam.io/v1)
+- `TEMPEST_API_URL` - Custom Tempest API URL (default: https://swd.weatherflow.com/swd/rest)
+
+### How It Works
+
+The deployment process is automated via GitHub Actions:
+
+1. **Trigger**: Pushes to `main` branch or manual workflow dispatch
+2. **Build Phase**:
+   - Checks out the code
+   - Sets up Node.js environment
+   - Runs `npm install` to install dependencies
+   - Runs `npm run build` which generates `config.json` from environment variables
+   - Runs `npm test` to verify the build
+3. **Deploy Phase**:
+   - Authenticates with Azure using federated credentials
+   - Deploys the application to Azure App Service
+   - The Node.js server (`server.js`) serves the static files
+
+### Manual Deployment
+
+If you need to deploy manually:
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Set environment variables
+export WEBCAM_CAMERA_ID="your_camera_id"
+export TEMPEST_STATION_ID="your_station_id"
+export TEMPEST_API_TOKEN="your_api_token"
+
+# 3. Generate config.json
+npm run build
+
+# 4. Deploy using Azure CLI
+az webapp up --name sqltrainerweather --resource-group your-resource-group
+```
+
+### Verifying Deployment
+
+After deployment:
+1. Visit your Azure App Service URL: `https://sqltrainerweather.azurewebsites.net`
+2. Check that the page loads correctly
+3. Verify weather data and webcam images are displaying
+4. Check Azure App Service logs if there are issues
+
+### Updating Configuration
+
+To update API credentials or configuration:
+1. Update the GitHub repository secrets
+2. Trigger a new deployment by:
+   - Pushing to the `main` branch, or
+   - Using the "Run workflow" button in the Actions tab
+
+### Troubleshooting Azure Deployment
+
+**Build fails with missing environment variables:**
+- Verify all required secrets are set in GitHub repository settings
+- Check the Actions logs for specific missing variables
+
+**Deployment succeeds but site shows error:**
+- Check Azure App Service logs in the Azure Portal
+- Verify the `config.json` was generated correctly
+- Ensure the Node.js version matches what's specified in the workflow
+
+**Site loads but no data displays:**
+- Verify your API credentials are correct in GitHub secrets
+- Check browser console for API errors
+- Verify the Tempest station and webcam are online and accessible
 
 ## License
 

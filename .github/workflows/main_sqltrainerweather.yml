@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - main
+      - copilot/setup-automatic-deployment-azure  # Remove this line after testing
   workflow_dispatch:
 
 jobs:
@@ -28,6 +29,14 @@ jobs:
           npm install
           npm run build --if-present
           npm run test --if-present
+        env:
+          WEBCAM_CAMERA_ID: ${{ secrets.WEBCAM_CAMERA_ID }}
+          TEMPEST_STATION_ID: ${{ secrets.TEMPEST_STATION_ID }}
+          TEMPEST_API_TOKEN: ${{ secrets.TEMPEST_API_TOKEN }}
+          SITE_TITLE: ${{ secrets.SITE_TITLE }}
+          SITE_REFRESH_INTERVAL: ${{ secrets.SITE_REFRESH_INTERVAL }}
+          WEBCAM_API_URL: ${{ secrets.WEBCAM_API_URL }}
+          TEMPEST_API_URL: ${{ secrets.TEMPEST_API_URL }}
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4

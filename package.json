@@ -1,0 +1,30 @@
+{
+  "name": "webcam-weather",
+  "version": "1.0.0",
+  "description": "A dynamic website that displays live webcam images and real-time weather data from a Tempest weather station",
+  "main": "index.html",
+  "scripts": {
+    "start": "node server.js",
+    "build": "node generate-config.js",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/temalo/WebcamWeather.git"
+  },
+  "keywords": [
+    "webcam",
+    "weather",
+    "tempest",
+    "dashboard"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/temalo/WebcamWeather/issues"
+  },
+  "homepage": "https://github.com/temalo/WebcamWeather#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
